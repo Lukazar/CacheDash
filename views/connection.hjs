@@ -1,0 +1,4 @@
+<form id="connection">
+<input type="text" value="{{host}}" name="host" id="connection[host]">
+
+</form>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- jQuery UI -->
+    <link href="css/theme/jquery-ui-1.10.4.custom.css" rel="stylesheet">
+    <script src="js/jquery-1.10.2.js"></script>
+    <script src="js/jquery-ui-1.10.4.custom.js"></script>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+
+    <!-- Document Loading -->
+    <script type="text/javascript">
+     $(document).ready(function () {
+
+       $('#connection_connect').on('click', function(ev) {
+         ev.preventDefault();
+         $(this).removeClass('btn-primary').addClass('btn-info').text('Connecting...');
+         var submitter = $(this);
+         setTimeout(function () {
+          $(submitter).removeClass('btn-info').addClass('btn-danger').text('Disconnect');
+         }, 8000); 
+       });
+     });
+    </script>
+
+
+
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="starter-template">
+        <h1>CacheDash v1.0</h1>
+
+        <!-- Host connection form -->
+        <form class="form-inline" role="form">
+          <div class="form-group">
+            <label class="sr-only" for="connection_host">Host IP</label>
+            <input type="text" class="form-control" id="connection_host" name="connection[host]" placeholder="Host IP (127.0.0.1)">
+          </div>
+          <div class="form-group">
+            <label class="sr-only" for="connection_port">Port</label>
+            <input type="text" class="form-control" id="connection_port" name="connection[port]" placeholder="Port (11211)">
+          </div>
+          <button id="connection_connect" class="btn btn-primary">Connect</button>
+        </form>
+   
+      </div>
+    </div>
+
+<!--
+  <div id="container">
+  <h1>Testing font</h1>
+  <form id="connection">
+      <input type="text" id="host" placeholder="host" name="host">
+      <input type="text" id="port" placeholder="port" name="port">
+  </form>
+  </div>
+-->
+
+  </body>
+</html>

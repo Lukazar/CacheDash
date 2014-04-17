@@ -1,0 +1,2 @@
+Make emitter a child process to prevent blocking
+https://github.com/andygup/node-background-processor/blob/master/index.js
