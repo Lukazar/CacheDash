@@ -82,14 +82,15 @@ $(document).ready(function (){
          connection : Backbone.Model.extend({
            // initial values connect to localhost
            defaults : {
-             host: "localhost",
-             port: 11211,
-             username : "",
-             password : ""
+             server: "localhost:11211",             
+             //username : "",
+             //password : ""
            },
            // validates properties of model
            validate : function(properties) {
-             if(isNaN(parseInt(properties.port))) {
+           	 
+           	 var port = properties.server.split(':').pop();
+             if(isNaN(parseInt(port))) {
                 return 'EINVALIDPORT';
              }
            }
@@ -103,11 +104,13 @@ $(document).ready(function (){
 
            // binds server events emitted to view functions
            serverEvents: function() {
+           	  
              this.properties.socket.on('keysDelta', this.processKeyDeltas);
              
            },
  	    //adds regex option to the datatable that is passed. 
            createRegexSearchOption: function(table) {
+               
                //add regex checkbox
                $('div.search-options').css({'float':'right','width':'10%'}).append(
                  $('<label />').append(
@@ -121,6 +124,7 @@ $(document).ready(function (){
                });
             },
            renderSelectedKey : function(evt) {
+             
              // get text after element (key name)
               var selectedRow = $(evt.currentTarget)[0];
               var keyName = this.properties.keyTable.fnGetData(selectedRow)[0];
@@ -165,14 +169,16 @@ $(document).ready(function (){
                {
                  // convert size codes to plaintext
                  mRender: function(data, type, full) {
-                   return (data.substr(-1) === 'b') ? data.substr(0,data.length - 1) + 'bytes' : data;
+					return data;                   
                  } 
                },
                {
                  //strip seconds tag off time, create date
                  mRender: function(data, type, full) {
-                   var retDate = new Date();
-                   retDate.setUTCSeconds(data.substr(0,data.length-1));
+                   var retDate = new Date();                   
+                   retDate.setUTCSeconds(parseInt(data));
+                   
+                   
                    return retDate;
                  }
                }]
@@ -186,17 +192,18 @@ $(document).ready(function (){
 
            // processes key changes to datatable
            processKeyDeltas: function(keyChanges) {
-               this.properties.keyTable.fnAddData(keyChanges.added);
+           
+               this.properties.keyTable.fnAddData(keyChanges);
 
                //iterate and remove keys
-               var deletedKeysLen = keyChanges.deleted.length;
+               /*var deletedKeysLen = keyChanges.deleted.length;
                for(idx = 0; idx < deletedKeysLen; idx ++) {
                  var deletedKeyElement = this.properties.keyTable.ioData[keysChanged[idx]];
                  if(deletedKeyElement) {
                    this.properties.keyTable.fnDeleteRow(deletedKeyElement);
                    // remove the key here 
                  } 
-               }
+               }*/
            } 
          }),
 
@@ -219,6 +226,7 @@ $(document).ready(function (){
            //creates duplex to bridge client to memcache connection (bridged by NodeJS server)
            launchConnection: function() {
 var _parent = this;
+
              if(this.socket) delete this.socket;
              this.socket = io.connect('/memcache');
              this.socket.on('generalException', function(err) {
@@ -230,6 +238,7 @@ console.log(err);
              // primary logic handler for client side socket io
              var _parent = this;
              this.socket.emit('newConnection', this.model, function(err) {
+             
                if(err) {
                  _parent.renderError(err);
                } else {
@@ -247,13 +256,13 @@ console.log(err);
 
              this.$el.find('#connection_err').empty().hide();           
              this.model.set({
-               host: this.$el.find('#txt_connection_host').val(),
-               port: this.$el.find('#txt_connection_port').val(),
-               username: this.$el.find('#txt_connection_user').val(),
-               password: this.$el.find('#txt_connection_pass').val()
+             	server: this.$el.find('#txt_connection_host').val() + ':' + this.$el.find('#txt_connection_port').val()               
+               //username: this.$el.find('#txt_connection_user').val(),
+               //password: this.$el.find('#txt_connection_pass').val()
              });
 
-             // validate and show error 
+             // validate and show error
+              
              if(!this.model.isValid()) {
                this.renderError([this.model.validationError]);
                return;
@@ -363,12 +372,7 @@ console.log(errors);
             <th>Size</th>
             <th>Expiration</th>
           </thead>
-          <tbody>
-            <tr>
-              <td>Key 1</td>
-              <td>29283 bytes</td>
-              <td>22 minutes</td>
-            </tr>
+          <tbody>            
           </tbody>
         </table>
         </div>

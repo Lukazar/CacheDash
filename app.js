@@ -32,7 +32,7 @@ if ('development' == app.get('env')) {
 }
 
 var httpServ = http.createServer(app);
-socketio = require('socket.io').listen(httpServ);
+socketio = require('socket.io').listen(httpServ, {log:false});
 
 httpServ.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

@@ -1,17 +1,33 @@
 {
   "name": "CacheDash",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "3.4.8",
-    "hjs": "*"
+    "express": "3.4.8", 
+    "async": "~0.2.10",
+    "hjs": "~0.0.6",
+    "memcached": "~0.2.8",
+    "node-random" : "~0.0.3",
+    "socket.io": "0.9.16"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
     "grunt-contrib-handlebars": "~0.7.0",
     "grunt-contrib-watch": "~0.6.1"
-  }
+  },
+  "description": "CacheDash is a utility for developers to quickly hack around with memcached. The telnet interface gets old, and at the moment cachedash isn't much better. It's an ongoing project to provide a GUI for memory stores.",
+  "main": "Gruntfile.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lukazar/CacheDash.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Lukazar/CacheDash/issues"
+  },
+  "homepage": "https://github.com/Lukazar/CacheDash"
 }

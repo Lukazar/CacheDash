@@ -69,53 +69,24 @@ MemcacheSocket.prototype.bindCRUD = function() {
 MemcacheSocket.prototype.createMemcacheConnections = function(connectionDetails, callback) {
     var _parent = this;
 
+    console.log(connectionDetails);
+    
     //client requested memcache connection, create and bind events
     this.memcacheConnection = new memcacheLib(connectionDetails);
-    async.series([
-       //create connection for basic actions
-      function(callback) {
-        _parent.memcacheConnection.connection.on('error', function(err) { callback([err.code]); });
-        _parent.memcacheConnection.connection.on('timeout', function() { callback(['ECONNTIMEOUT']); });
-        _parent.memcacheConnection.connection.on('close', function() { 
-console.log('close on connection');
-          _parent.socket.emit('generalException',['ECONNCLOSED']);
-        });
-        _parent.memcacheConnection.connection.on('disconnect', function () {
-console.log('disconnect on connection');
-          _parent.pollingKeys = true;
-        });
-        _parent.memcacheConnection.connection.on('connect', function() {
-          callback(null, true);
-        });
-        _parent.memcacheConnection.connection.connect();
-      },
-
-      //create connection to poll with
-      function(callback) {
-        _parent.memcacheConnection.pollingConnection.on('error', function(err) { callback([err.code]); });
-        _parent.memcacheConnection.pollingConnection.on('timeout', function() { callback(['ECONNTIMEOUT']); });
-        _parent.memcacheConnection.pollingConnection.on('close', function() { 
-console.log('close on pollingConnection');
-          _parent.socket.emit('generalException',['ECONNCLOSED']); 
-        });     
- 
-        _parent.memcacheConnection.pollingConnection.on('disconnect', function() {
-console.log('disconnect on pollingConnection');
-          _parent.pollingKeys = false;
-        });
-      
-        _parent.memcacheConnection.pollingConnection.on('connect',function() { 
-          callback(null, true);
-        });
-        _parent.memcacheConnection.pollingConnection.connect();
-      }
-    ], function(err, connections) {
-         if(err) {
-           callback(err);
-         } else {
-           callback();
-         }
-    });
+    
+    //basic actions connection
+    _parent.memcacheConnection.connection.on('failure', function(details){ callback([details])});
+    _parent.memcacheConnection.connection.on('issue', function(details){ callback([details])});
+    _parent.memcacheConnection.connection.on('reconnecting', function(details){ callback([details])});
+    _parent.memcacheConnection.connection.on('reconnected', function(details){ callback([details])});
+    
+    _parent.memcacheConnection.pollingConnection.on('failure', function(details){ callback([details])});
+    _parent.memcacheConnection.pollingConnection.on('issue', function(details){ callback([details])});
+    _parent.memcacheConnection.pollingConnection.on('reconnecting', function(details){ callback([details])});
+    _parent.memcacheConnection.pollingConnection.on('reconnected', function(details){ callback([details])});
+    
+    callback();
+    
 // TODO : create proper flow to create both connections with single function 
 // (provide object with functions to configure connection callbacks)
 
@@ -134,9 +105,9 @@ MemcacheSocket.prototype.emitKeyChanges = function() {
    this.memcacheConnection.emitKeyDeltas(function(err, keysChanged) {
      if(err) {
        _parent.socket.emit('generalException', err);
-     } else {
-       var keysHaveChanged = ((keysChanged.added.length || 0) + (keysChanged.deleted.length || 0)) > 0;
-       if(keysHaveChanged) {
+     } else {       
+       var keysHaveChanged = !!keysChanged.length;       
+       if(keysHaveChanged) {         
          _parent.socket.emit('keysDelta', keysChanged);
        }
      }
